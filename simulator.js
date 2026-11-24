@@ -1,71 +1,71 @@
-/* Acuasmart Rural · simulador del nodo IoT (ESP32)
-   Genera lecturas de oxígeno, temperatura, pH y caudal para demostrar el
-   prototipo sin hardware. Sustituir por MQTT / HTTPS / Firebase en la versión real. */
-(function () {
-  'use strict';
+// Simulador de datos del nodo ESP32 para pruebas sin sensores físicos
 
-  var C = window.ACUA_CONFIG;
+var cfg = window.ACUA_CONFIG;
 
-  function seeded(seed) {
-    var s = seed >>> 0;
+function aleatorioConSemilla(semilla) {
+    var num = semilla >>> 0;
     return function () {
-      s = (s * 1664525 + 1013904223) >>> 0;
-      return s / 4294967296;
+      num = (num * 1664525 + 1013904223) >>> 0;
+      return num / 4294967296;
     };
-  }
+}
 
-  function round(v, d) {
-    var f = Math.pow(10, d);
-    return Math.round(v * f) / f;
-  }
+function redondear(valor, decimales) {
+  var factor = Math.pow(10, decimales);
+    return Math.round(valor * factor) / factor;
+}
 
-  // Historial sintético: ciclo diario (el oxígeno baja de madrugada) + eventos de lluvia
-  function createHistory(speciesKey) {
-    var base = C.species[speciesKey].base;
-    var rand = seeded(speciesKey === 'trucha' ? 1234 : 5678);
-    var now = Date.now();
-    var out = [];
-    var rain = 0;
+// Genera datos hacia atrás simulando el día, la noche y lluvias
+function crearHistorial(especie) {
+  var base = cfg.species[especie].base;
+  var azar = aleatorioConSemilla(especie === 'trucha' ? 1234 : 5678);
+  var ahora = Date.now();
+  var datos = [];
+  var lluvia = 0;
 
-    for (var i = C.historyHours - 1; i >= 0; i--) {
-      var t = now - i * 3600 * 1000;
-      var hour = new Date(t).getHours();
-      var cycle = Math.cos((2 * Math.PI * (hour - 15)) / 24);
+  for (var i = cfg.historyHours - 1; i >= 0; i--) {
+      var tiempo = ahora - i * 3600 * 1000;
+      var hora = new Date(tiempo).getHours();
+      var ciclo = Math.cos((2 * Math.PI * (hora - 15)) / 24);
 
-      if (rand() < 0.012) rain = 1;   // inicia una lluvia
-      rain *= 0.93;                   // y decae con las horas
+    if (azar() < 0.012) {
+        lluvia = 1;
+    }
+      lluvia = lluvia * 0.93;
 
-      out.push({
-        t: t,
-        od:   round(base.od   + 0.5 * cycle - 0.15 * rain + (rand() - 0.5) * 0.2, 2),
-        temp: round(base.temp + 1.2 * cycle - 0.8 * rain  + (rand() - 0.5) * 0.3, 2),
-        ph:   round(base.ph   + 0.12 * cycle - 0.1 * rain + (rand() - 0.5) * 0.08, 2),
-        flow: round(base.flow * C.flowHistoryFactor * (1 + 0.35 * rain) + (rand() - 0.5) * 1.5, 1)
+      datos.push({
+        t: tiempo,
+        od: redondear(base.od + 0.5 * ciclo - 0.15 * lluvia + (azar() - 0.5) * 0.2, 2),
+        temp: redondear(base.temp + 1.2 * ciclo - 0.8 * lluvia + (azar() - 0.5) * 0.3, 2),
+        ph: redondear(base.ph + 0.12 * ciclo - 0.1 * lluvia + (azar() - 0.5) * 0.08, 2),
+        cau: redondear(base.flow * cfg.flowHistoryFactor * (1 + 0.35 * lluvia) + (azar() - 0.5) * 1.5, 1)
       });
-    }
-    // La lectura más reciente parte del caudal actual (sin efecto de lluvia)
-    out[out.length - 1].flow = base.flow;
-    return out;
   }
 
-  // Siguiente lectura en vivo: caminata aleatoria con retorno a la media
-  function next(prev, speciesKey, hypoxia) {
-    var base = C.species[speciesKey].base;
-    var target = {
-      od: hypoxia ? C.hypoxiaTarget[speciesKey] : base.od,
-      temp: base.temp, ph: base.ph, flow: base.flow
-    };
-    function step(key, k, noise) {
-      return prev[key] + (target[key] - prev[key]) * k + (Math.random() - 0.5) * noise;
-    }
-    return {
-      t: Date.now(),
-      od:   round(step('od', hypoxia ? 0.22 : 0.12, 0.10), 2),
-      temp: round(step('temp', 0.08, 0.12), 2),
-      ph:   round(step('ph', 0.08, 0.04), 2),
-      flow: round(step('flow', 0.10, 0.5), 1)
-    };
+  // El último dato arranca con el caudal normal actual
+  datos[datos.length - 1].flow = base.flow;
+  return datos;
+}
+
+// Calcula la siguiente lectura cada vez que pasa el tiempo
+function siguienteLectura(anterior, especie, bajaOxigeno) {
+    var base = cfg.species[especie].base;
+    var objetivoOd = bajaOxigeno ? cfg.hypoxiaTarget[especie] : base.od;
+
+  function calcularCambio(campo, meta, ajuste, ruido) {
+    return anterior[campo] + (meta - anterior[campo]) * ajuste + (Math.random() - 0.5) * ruido;
   }
 
-  window.AcuaSim = { createHistory: createHistory, next: next };
-})();
+  return {
+    t: Date.now(),
+    od: redondear(calcularCambio('od', objetivoOd, bajaOxigeno ? 0.22 : 0.12, 0.10), 2),
+    temp: redondear(calcularCambio('temp', base.temp, 0.08, 0.12), 2),
+      ph: redondear(calcularCambio('ph', base.ph, 0.08, 0.04), 2),
+      cau: redondear(calcularCambio('flow', base.flow, 0.10, 0.5), 1)
+  };
+}
+
+window.AcuaSim = {
+  createHistory: crearHistorial,
+  next: siguienteLectura
+};
