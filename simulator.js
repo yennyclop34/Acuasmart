@@ -1,4 +1,4 @@
-// Simulador de datos del nodo ESP32 para pruebas sin sensores físicos
+// Simulador de datos del nodo ESP32 para prueba sin sensor físicos
 
 var cfg = window.ACUA_CONFIG;
 
@@ -22,8 +22,9 @@ function crearHistorial(especie) {
   var ahora = Date.now();
   var datos = [];
   var lluvia = 0;
+  var totalHoras = cfg.historialhoras || 720;
 
-  for (var i = cfg.historyHours - 1; i >= 0; i--) {
+  for (var i = totalHoras - 1; i >= 0; i--) {
       var tiempo = ahora - i * 3600 * 1000;
       var hora = new Date(tiempo).getHours();
       var ciclo = Math.cos((2 * Math.PI * (hora - 15)) / 24);
@@ -38,19 +39,21 @@ function crearHistorial(especie) {
         od: redondear(base.od + 0.5 * ciclo - 0.15 * lluvia + (azar() - 0.5) * 0.2, 2),
         temp: redondear(base.temp + 1.2 * ciclo - 0.8 * lluvia + (azar() - 0.5) * 0.3, 2),
         ph: redondear(base.ph + 0.12 * ciclo - 0.1 * lluvia + (azar() - 0.5) * 0.08, 2),
-        cau: redondear(base.flow * cfg.flowHistoryFactor * (1 + 0.35 * lluvia) + (azar() - 0.5) * 1.5, 1)
+         cau: redondear(base.cau* (cfg.caudalhistorico || 1.06) * (1 + 0.35 * lluvia) + (azar() - 0.5) * 1.5, 1)
       });
   }
 
   // El último dato arranca con el caudal normal actual
-  datos[datos.length - 1].flow = base.flow;
+  if (datos.length > 0) {
+    datos[datos.length - 1].flow = base.flow;
+  }
   return datos;
 }
 
-// Calcula la siguiente lectura cada vez que pasa el tiempo
+// Calcula la siguiente lectura cada vez que paa el tiempo
 function siguienteLectura(anterior, especie, bajaOxigeno) {
     var base = cfg.species[especie].base;
-    var objetivoOd = bajaOxigeno ? cfg.hypoxiaTarget[especie] : base.od;
+    var objetivoOd = bajaOxigeno ? cfg.oxibajTarget[especie] : base.od;
 
   function calcularCambio(campo, meta, ajuste, ruido) {
     return anterior[campo] + (meta - anterior[campo]) * ajuste + (Math.random() - 0.5) * ruido;
@@ -61,7 +64,7 @@ function siguienteLectura(anterior, especie, bajaOxigeno) {
     od: redondear(calcularCambio('od', objetivoOd, bajaOxigeno ? 0.22 : 0.12, 0.10), 2),
     temp: redondear(calcularCambio('temp', base.temp, 0.08, 0.12), 2),
       ph: redondear(calcularCambio('ph', base.ph, 0.08, 0.04), 2),
-      cau: redondear(calcularCambio('flow', base.flow, 0.10, 0.5), 1)
+      flow: redondear(calcularCambio('cau', base.flow, 0.10, 0.5), 1)
   };
 }
 
