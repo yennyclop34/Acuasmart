@@ -40,12 +40,12 @@
     },
 
     // Escenario de demostración: el oxígeno cae por debajo del umbral crítico
-    hypoxiaTarget: { trucha: 4.6, mojarra: 3.0 },
+    oxibajTarget: { trucha: 4.6, mojarra: 3.0 },
 
     // El historial de caudal parte de un nivel algo mayor que el actual,
     // para que el prototipo muestre "el caudal bajó ~15 %" como en Figma.
-    flowHistoryFactor: 1.06,
-    flowTrendThreshold: 10,   // % de cambio que activa la sugerencia de revisar la bocatoma
+   caudalfactor: 1.06,
+    caudaltend: 10,   // % de cambio que activa la sugerencia de revisar la bocatoma
 
     tickMs: 3000,
     historyHours: 720,
