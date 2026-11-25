@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3f8fc">
+  <meta name="description" content="Acuasmart Rural: monitoreo de calidad del agua y caudal en piscicultura rural de Manizales, Caldas. Proyecto UNAD.">
+  <title>Acuasmart Rural</title>
+  <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+  <div class="phone">
+
+    <div class="statusline">
+      <span id="clock">--:--</span>
+      <span id="netBadge" class="net net--on">4G</span>
+    </div>
+    <div id="offlineBanner" class="banner" hidden></div>
+
+    <main>
+
+      <!-- Vista: Predio -->
+      <section id="screen-predio" class="screen" aria-labelledby="t-predio">
+        <header class="head">
+          <p class="eyebrow">ACUICULTURA CONECTADA</p>
+          <h1>Acuasmart Rural</h1>
+          <p class="sub">— Proyecto UNAD</p>
+        </header>
+
+        <div class="panel-blue">
+          <h2 id="t-predio">Configura tu estanque</h2>
+          <p class="lead">Tu predio, conectado y bajo control.</p>
+
+          <form id="predioForm" novalidate>
+            <label for="productor">Nombre del productor</label>
+            <input id="productor" type="text" autocomplete="name" value="Carlos Alberto Gómez">
+
+            <label for="vereda">Vereda</label>
+            <input id="vereda" type="text" value="La Cabaña, Manizales">
+
+            <fieldset>
+              <legend>Especie del estanque</legend>
+              <div class="opts">
+                <label class="opt">
+                  <input type="radio" name="especie" value="trucha" checked>
+                  <span>Trucha Arcoíris</span>
+                </label>
+                <label class="opt">
+                  <input type="radio" name="especie" value="mojarra">
+                  <span>Mojarra</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <label for="nodo">ID del nodo sensor ESP32</label>
+            <div class="node">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5"/>
+              </svg>
+              <input id="nodo" type="text" value="ACUA-MZL-01" size="12" aria-label="ID del nodo sensor">
+              <span>- Sincronizado</span>
+            </div>
+
+            <div class="consent">
+              <input id="consent" type="checkbox">
+              <div>
+                <label for="consent">Autorizo el tratamiento de mis datos según la Ley 1581 de 2012.</label>
+                <button type="button" class="linklike" id="btnPrivacy">Consulta el aviso de privacidad.</button>
+              </div>
+            </div>
+            <p id="formError" class="hint-err" role="alert" hidden></p>
+
+            <button class="btn btn--orange" type="submit">Guardar y Ver Monitoreo</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Vista: Monitoreo -->
+      <section id="screen-monitoreo" class="screen" aria-labelledby="monTitle" hidden>
+        <header class="head head--row">
+          <div>
+            <p class="eyebrow">ACUASMART RURAL</p>
+            <h1 id="monTitle">Mi estanque</h1>
+            <p class="sub" id="monSub"></p>
+          </div>
+          <span id="monBadge" class="status-badge" data-status="ok" aria-hidden="true"></span>
+        </header>
+
+        <div class="hero" id="overall" data-status="ok">
+          <p class="hero__label" id="heroLabel"></p>
+          <p class="hero__state" id="heroState">ÓPTIMO</p>
+          <p class="hero__sync" id="syncInfo"></p>
+        </div>
+
+        <div id="cards" class="cards" aria-live="polite"></div>
+
+        <button type="button" id="tipCard" class="tip"></button>
+
+        <details class="demo">
+          <summary>Modo demostración</summary>
+          <p class="demo__text">Los datos son simulados. Usa estos botones para probar cómo responde el sistema.</p>
+          <div class="demo__row">
+            <button class="btn btn--ghost" id="btnHypoxia" type="button">Simular caída de oxígeno</button>
+            <button class="btn btn--ghost" id="btnOffline" type="button">Simular pérdida de señal</button>
+            <button class="btn btn--ghost" id="btnReset" type="button">Restablecer valores normales</button>
+          </div>
+          <p class="demo__text" id="pendingInfo"></p>
+        </details>
+      </section>
+
+      <!-- Vista: Historial -->
+      <section id="screen-historial" class="screen" aria-labelledby="t-his" hidden>
+        <header class="head">
+          <p class="eyebrow">ACUASMART RURAL</p>
+          <h1 id="t-his">Historial hídrico</h1>
+          <p class="sub" id="hisSub"></p>
+        </header>
+
+        <label for="varSelect" class="field-label">Variable a consultar</label>
+        <select id="varSelect"></select>
+
+        <div class="tabs" role="tablist" aria-label="Rango de tiempo">
+          <button role="tab" class="tab is-active" data-range="24h" aria-selected="true">24 horas</button>
+          <button role="tab" class="tab" data-range="7d" aria-selected="false">7 días</button>
+          <button role="tab" class="tab" data-range="30d" aria-selected="false">30 días</button>
+        </div>
+
+        <div class="chart-card">
+          <h2 id="chartTitle">Evolución horaria</h2>
+          <p class="chart-card__sub" id="chartSub"></p>
+          <p class="chart-card__legend" id="chartLegend"></p>
+          <div id="chart" class="chart" role="img" aria-label="Gráfica de tendencia"></div>
+        </div>
+
+        <div class="summary" id="summary" data-status="ok"></div>
+
+        <button type="button" class="btn btn--blue" id="btnToAsistente">Ver recomendaciones y mantenimiento</button>
+      </section>
+
+      <!-- Vista: Alertas -->
+      <section id="screen-alertas" class="screen" aria-labelledby="t-ale" hidden>
+        <header class="head">
+          <p class="eyebrow">ACUASMART RURAL</p>
+          <h1 id="t-ale">Centro de alertas</h1>
+          <p class="sub" id="aleSub"></p>
+        </header>
+
+        <div id="activeAlert"></div>
+
+        <h2 class="section-title">Historial de alertas</h2>
+        <ul id="alertList" class="alist"></ul>
+      </section>
+
+      <!-- Vista: Asistente -->
+      <section id="screen-asistente" class="screen" aria-labelledby="t-ast" hidden>
+        <header class="head">
+          <p class="eyebrow">ACUASMART RURAL</p>
+          <h1 id="t-ast">Asistente preventivo</h1>
+          <p class="sub">Recomendaciones y mantenimiento</p>
+        </header>
+
+        <div id="analysis" class="analysis"></div>
+        <div id="steps"></div>
+
+        <p class="foot" id="astFoot"></p>
+        <button type="button" class="btn btn--blue" id="btnLog">Registrar mantenimiento</button>
+        <p class="foot" id="lastLog"></p>
+      </section>
+
+    </main>
+
+    <nav class="nav" aria-label="Navegación principal">
+      <button class="nav__btn is-active" data-target="predio">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 11l9-8 9 8M5 10v10h14V10"/>
+        </svg>
+        <span>Predio</span>
+      </button>
+      <button class="nav__btn" data-target="monitoreo">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 12h4l3-8 4 16 3-8h4"/>
+        </svg>
+        <span>Monitoreo</span>
+      </button>
+      <button class="nav__btn" data-target="historial">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5M12 7v5l3 2"/>
+        </svg>
+        <span>Historial</span>
+      </button>
+      <button class="nav__btn" data-target="alertas">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 21h4"/>
+        </svg>
+        <span>Alertas</span>
+        <b id="navBadge" class="nav__badge" hidden>0</b>
+      </button>
+    </nav>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <dialog id="privacy">
+      <h2>Aviso de privacidad</h2>
+      <p>Acuasmart recolecta tu nombre, contacto, la ubicación de tu predio y los registros de producción solo para fines académicos y de validación del prototipo, conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013.</p>
+      <p>Los datos se protegen con acceso restringido y se presentan de forma anonimizada en los informes. Puedes retirar tu autorización en cualquier momento.</p>
+      <form method="dialog">
+        <button class="btn btn--blue">Entendido</button>
+      </form>
+    </dialog>
+  </div>
+
+  <script src="scripts/config.js"></script>
+  <script src="scripts/simulator.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
