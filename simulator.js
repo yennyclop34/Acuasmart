@@ -1,6 +1,6 @@
-/* Acuasmart Rural · simulador del nodo IoT (ESP32)
+/* Acuasmart Rural 
    Genera lecturas de oxígeno, temperatura, pH y caudal para demostrar el
-   prototipo sin hardware. Sustituir por MQTT / HTTPS / Firebase en la versión real. */
+   prototipo sin hardwar
 (function () {
   'use strict';
 
@@ -40,7 +40,7 @@
         od:   round(base.od   + 0.5 * cycle - 0.15 * rain + (rand() - 0.5) * 0.2, 2),
         temp: round(base.temp + 1.2 * cycle - 0.8 * rain  + (rand() - 0.5) * 0.3, 2),
         ph:   round(base.ph   + 0.12 * cycle - 0.1 * rain + (rand() - 0.5) * 0.08, 2),
-        flow: round(base.flow * C.flowHistoryFactor * (1 + 0.35 * rain) + (rand() - 0.5) * 1.5, 1)
+        cau: round(base.flow * C.flowHistoryFactor * (1 + 0.35 * rain) + (rand() - 0.5) * 1.5, 1)
       });
     }
     // La lectura más reciente parte del caudal actual (sin efecto de lluvia)
@@ -52,7 +52,7 @@
   function next(prev, speciesKey, hypoxia) {
     var base = C.species[speciesKey].base;
     var target = {
-      od: hypoxia ? C.hypoxiaTarget[speciesKey] : base.od,
+      od: hipoxia ? C.oxiTarget[speciesKey] : base.od,
       temp: base.temp, ph: base.ph, flow: base.flow
     };
     function step(key, k, noise) {
@@ -63,7 +63,7 @@
       od:   round(step('od', hypoxia ? 0.22 : 0.12, 0.10), 2),
       temp: round(step('temp', 0.08, 0.12), 2),
       ph:   round(step('ph', 0.08, 0.04), 2),
-      flow: round(step('flow', 0.10, 0.5), 1)
+      cau: round(step('flow', 0.10, 0.5), 1)
     };
   }
 
