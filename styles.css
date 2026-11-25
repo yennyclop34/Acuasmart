@@ -1,22 +1,22 @@
-/Estilos /
+/Estilos/
 
 :root {
   --navy: #0d2b4a;
-    --ink: #12263b;
+  --ink: #12263b;
   --muted: #53667b;
   --bg: #f3f8fc;
-    --panel: #e8f2f9;
+  --panel: #e8f2f9;
   --tint: #dfeefa;
   --line: #d0e0ec;
   --blue: #0a7bbf;
   --blue-dark: #07629a;
-    --orange: #d9730a;
+  --orange: #d9730a;
   --orange-dark: #b85e04;
   --ok: #1a7f3c;
   --ok-bg: #e1f4e8;
   --ok-line: #a5d8b7;
   --warn: #8a5600;
-    --warn-bg: #fdefc4;
+  --warn-bg: #fdefc4;
   --warn-line: #ecd27f;
   --crit: #b3201f;
   --crit-bg: #fde4e3;
@@ -27,19 +27,20 @@
 [hidden] { display: none !important; }
 
 html, body { 
-    margin: 0px; 
-    height: 100%; 
+  margin: 0px; 
+  height: 100%; 
 }
 
-body{
+body {
   font-family: var(--font);
-    color: var(--ink);
+  color: var(--ink);
   background: #d9e6f1;
   display: flex;
   justify-content: center;
   -webkit-text-size-adjust: 100%;
 }
 
+button { font-family: inherit; }
 button { font-family: inherit; }
 
 .phone {
