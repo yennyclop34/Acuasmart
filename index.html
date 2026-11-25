@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f3f8fc">
   <meta name="description" content="Acuasmart Rural: prototipo web para el monitoreo de calidad del agua y caudal en piscicultura rural de Manizales, Caldas. Proyecto UNAD.">
   <title>Acuasmart Rural · Prototipo</title>
-  <link rel="stylesheet" href="styles/styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="phone">
@@ -144,55 +144,4 @@
       </section>
 
       <!-- 5. Asistente preventivo -->
-      <section id="screen-asistente" class="screen" aria-labelledby="t-ast" hidden>
-        <header class="head">
-          <p class="eyebrow">ACUASMART RURAL</p>
-          <h1 id="t-ast">Asistente preventivo</h1>
-          <p class="sub">Recomendaciones y mantenimiento</p>
-        </header>
-
-        <div id="analysis" class="analysis"></div>
-        <div id="steps"></div>
-
-        <p class="foot" id="astFoot"></p>
-        <button type="button" class="btn btn--blue" id="btnLog">Registrar mantenimiento</button>
-        <p class="foot" id="lastLog"></p>
-      </section>
-
-    </main>
-
-    <nav class="nav" aria-label="Navegación principal">
-      <button class="nav__btn is-active" data-target="predio">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>
-        <span>Predio</span>
-      </button>
-      <button class="nav__btn" data-target="monitoreo">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
-        <span>Monitoreo</span>
-      </button>
-      <button class="nav__btn" data-target="historial">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5M12 7v5l3 2"/></svg>
-        <span>Historial</span>
-      </button>
-      <button class="nav__btn" data-target="alertas">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 21h4"/></svg>
-        <span>Alertas</span>
-        <b id="navBadge" class="nav__badge" hidden>0</b>
-      </button>
-    </nav>
-
-    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-
-    <dialog id="privacy">
-      <h2>Aviso de privacidad</h2>
-      <p>Acuasmart recolecta tu nombre, contacto, la ubicación de tu predio y los registros de producción solo para fines académicos y de validación del prototipo, conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013.</p>
-      <p>Los datos se protegen con acceso restringido y se presentan de forma anonimizada en los informes. Puedes retirar tu autorización en cualquier momento.</p>
-      <form method="dialog"><button class="btn btn--blue">Entendido</button></form>
-    </dialog>
-  </div>
-
-  <script src="scripts/config.js"></script>
-  <script src="scripts/simulator.js"></script>
-  <script src="scripts/app.js"></script>
-</body>
-</html>
+      <section id="screen-asistente" class
