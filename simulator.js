@@ -39,13 +39,13 @@ function crearHistorial(especie) {
         od: redondear(base.od + 0.5 * ciclo - 0.15 * lluvia + (azar() - 0.5) * 0.2, 2),
         temp: redondear(base.temp + 1.2 * ciclo - 0.8 * lluvia + (azar() - 0.5) * 0.3, 2),
         ph: redondear(base.ph + 0.12 * ciclo - 0.1 * lluvia + (azar() - 0.5) * 0.08, 2),
-        flow: redondear(base.flow * (cfg.flowHistoryFactor || 1.06) * (1 + 0.35 * lluvia) + (azar() - 0.5) * 1.5, 1)
+        cau: redondear(base.cau * (cfg.flowHistoryFactor || 1.06) * (1 + 0.35 * lluvia) + (azar() - 0.5) * 1.5, 1)
       });
   }
 
   // El último dato arranca con el caudal normal actual
   if (datos.length > 0) {
-    datos[datos.length - 1].flow = base.flow;
+    datos[datos.length - 1].cau = base.cau;
   }
   return datos;
 }
@@ -64,14 +64,9 @@ function siguienteLectura(anterior, especie, bajaOxigeno) {
     od: redondear(calcularCambio('od', objetivoOd, bajaOxigeno ? 0.22 : 0.12, 0.10), 2),
     temp: redondear(calcularCambio('temp', base.temp, 0.08, 0.12), 2),
     ph: redondear(calcularCambio('ph', base.ph, 0.08, 0.04), 2),
-    flow: redondear(calcularCambio('flow', base.flow, 0.10, 0.5), 1)
+    cau: redondear(calcularCambio('cau', base.cau, 0.10, 0.5), 1)
   };
 }
-
-window.AcuaSim = {
-  createHistory: crearHistorial,
-  next: siguienteLectura
-};
 
 window.AcuaSim = {
   createHistory: crearHistorial,
