@@ -53,7 +53,7 @@
     var base = C.species[speciesKey].base;
     var target = {
       od: hipoxia ? C.oxiTarget[speciesKey] : base.od,
-      temp: base.temp, ph: base.ph, flow: base.flow
+      temp: base.temp, ph: base.ph, cau: base.cau
     };
     function step(key, k, noise) {
       return prev[key] + (target[key] - prev[key]) * k + (Math.random() - 0.5) * noise;
