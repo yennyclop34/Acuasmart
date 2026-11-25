@@ -6,14 +6,14 @@ var NIVEL_ESTADO = { ok: 0, warn: 1, crit: 2 };
 var TEXTO_HERO = { ok: 'ÓPTIMO', warn: 'PRECAUCIÓN', crit: 'RIESGO CRÍTICO' };
 var MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 var MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-var NOMBRE_VERIFICAR = { od: 'el oxígeno', temp: 'la temperatura', ph: 'el pH', flow: 'el caudal' };
+var NOMBRE_VERIFICAR = { od: 'el oxígeno', temp: 'la temperatura', ph: 'el pH', cau: 'el caudal' };
 var PANTALLA_NAV = { asistente: 'historial' };
 
 var ICONOS_VAR = {
   od:   '<svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="3.5"/><circle cx="16" cy="8" r="2.5"/><circle cx="17" cy="17" r="1.8"/></svg>',
   temp: '<svg viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 1 1 4 0v9.5a4 4 0 1 1-4 0z"/></svg>',
   ph:   '<svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>',
-  flow: '<svg viewBox="0 0 24 24"><path d="M3 8h13a3 3 0 1 0-3-3M3 13h16a3 3 0 1 1-3 3M3 18h8"/></svg>'
+  cau:  '<svg viewBox="0 0 24 24"><path d="M3 8h13a3 3 0 1 0-3-3M3 13h16a3 3 0 1 1-3 3M3 18h8"/></svg>'
 };
 var ICONO_OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 var ICONO_ALERTA = '<svg viewBox="0 0 24 24"><path d="M12 3l10 17H2z"/><path d="M12 10v4M12 17.5v.5"/></svg>';
@@ -192,7 +192,7 @@ function tendenciaCaudal() {
   var valores = [];
   for (var i = 0; i < state.history.length; i++) {
     if (state.history[i].t >= hace7Dias) {
-      valores.push(state.history[i].flow);
+      valores.push(state.history[i].cau);
     }
   }
   if (valores.length === 0) {
@@ -203,7 +203,7 @@ function tendenciaCaudal() {
     suma += valores[j];
   }
   var promedio = suma / valores.length;
-  return Math.round(((state.latest.flow - promedio) / promedio) * 100);
+  return Math.round(((state.latest.cau - promedio) / promedio) * 100);
 }
 
 // Recomendaciones básicas según la variable que salió de rango
@@ -235,7 +235,7 @@ function obtenerRecomendaciones(key, direccion) {
         ['VERIFICACIÓN', 'Medir de nuevo con un equipo patrón antes de actuar']
       ]
     },
-    flow: {
+    cau: {
       low: [
         ['BOCATOMA', 'Revisar la bocatoma: puede haber hojas o sedimento'],
         ['MANTENIMIENTO', 'Limpiar la rejilla y comprobar la apertura de la compuerta']
@@ -377,7 +377,7 @@ function etiquetaVariable(key, valor) {
     return { cls: s, text: txt };
   }
 
-  if (key === 'flow') {
+  if (key === 'cau') {
     var tend = tendenciaCaudal();
     if (tend != null && tend <= -config.flowTrendThreshold) {
       return { cls: 'warn', text: '↘ ' + tend + '% Flujo' };
@@ -391,7 +391,7 @@ function etiquetaVariable(key, valor) {
     od: 'Óptimo',
     temp: 'Estable',
     ph: (valor >= 6.8 && valor <= 7.6) ? 'Neutro' : 'Normal',
-    flow: 'Estable'
+    cau: 'Estable'
   };
   return { cls: 'ok', text: '✓ ' + etiquetas[key] };
 }
@@ -824,7 +824,7 @@ function renderAsistente() {
   analisis.textContent = '';
   analisis.appendChild(crearElemento('p', 'analysis__eyebrow', 'ANÁLISIS · ÚLTIMOS 7 DÍAS'));
   analisis.appendChild(crearElemento('p', 'analysis__title', 'Cuida el agua, prevén fallas'));
-  analisis.appendChild(crearElemento('p', 'analysis__line', 'Caudal: ' + formatearValor('flow', state.latest.flow) + ' L/min · ' + textoTendencia));
+  analisis.appendChild(crearElemento('p', 'analysis__line', 'Caudal: ' + formatearValor('cau', state.latest.cau) + ' L/min · ' + textoTendencia));
   analisis.appendChild(crearElemento('p', 'analysis__line', 'Oxígeno: ' + odMin.toFixed(1) + '–' + odMax.toFixed(1) + ' mg/L · ' + (odOk ? 'En rango' : 'Con episodios bajos')));
 
   var hayCritico = peorEstado(state.status) === 'crit';
