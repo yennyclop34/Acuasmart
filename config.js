@@ -36,7 +36,7 @@ window.ACUA_CONFIG = {
       unit: '',
       decimals: 1
     },
-    flow: {
+    cau: {
       label: 'Caudal de ingreso',
       short: 'Caudal',
       card: 'Caudal de Ingreso',
@@ -48,22 +48,22 @@ window.ACUA_CONFIG = {
   species: {
     trucha: {
       name: 'Trucha Arcoíris',
-      base: { od: 7.4, temp: 13.5, ph: 7.2, flow: 45 },
+      base: { od: 7.4, temp: 13.5, ph: 7.2, cau: 45 },
       ranges: {
         od:   { ok: [6.0, null], warn: [5.0, 6.0] },
         temp: { ok: [9.0, 16.0], warn: [7.0, 18.0] },
         ph:   { ok: [6.5, 8.5],  warn: [6.0, 9.0] },
-        flow: { ok: [10, 120],   warn: [6, 140] }
+        cau:  { ok: [10, 120],   warn: [6, 140] }
       }
     },
     mojarra: {
       name: 'Mojarra',
-      base: { od: 6.2, temp: 27.0, ph: 7.4, flow: 40 },
+      base: { od: 6.2, temp: 27.0, ph: 7.4, cau: 40 },
       ranges: {
         od:   { ok: [5.0, null], warn: [4.0, 5.0] },
         temp: { ok: [24.0, 30.0], warn: [21.0, 32.0] },
         ph:   { ok: [6.5, 8.5],   warn: [6.0, 9.0] },
-        flow: { ok: [10, 100],    warn: [6, 120] }
+        cau:  { ok: [10, 100],    warn: [6, 120] }
       }
     }
   }
